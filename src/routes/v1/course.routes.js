@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const courseController = require("../../controllers/course.controller");
 const { createUploader } = require("../../middlewares");
+const validate = require("../../middlewares/validate.middleware");
+const { courseValidator } = require("../../validators/course.validator");
 
 const uploadCourseImage = createUploader({
   folder: "courses",
@@ -10,8 +12,8 @@ const uploadCourseImage = createUploader({
 
 router.get("/", courseController.list);
 router.get("/:id", courseController.getById);
-router.post("/", uploadCourseImage, courseController.create);
-router.put("/:id", courseController.update);
+router.post("/", uploadCourseImage, courseValidator, validate, courseController.create);
+router.put("/:id", uploadCourseImage, courseValidator, validate, courseController.update);
 router.delete("/:id", courseController.remove);
 
 module.exports = router;

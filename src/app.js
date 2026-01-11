@@ -1,25 +1,20 @@
 const express = require("express");
 const cors = require("cors");
-const helmet = require("helmet");
 const path = require("path");
 const compression = require("compression");
-const rateLimit = require("express-rate-limit");
+const { securityHeaders, apiLimiter, parameterPollution } = require("./middlewares/security.middleware");
 
 const routes = require("./routes");
 const config = require("./config/config");
 
 const app = express();
 
-/* ================= SECURITY ================= */
+/* ================= SECURITY & PERFORMANCE ================= */
 
 app.disable("x-powered-by");
-
-app.use(
-  helmet({
-    contentSecurityPolicy:
-      config.app.env === "production" ? undefined : false,
-  })
-);
+app.use(securityHeaders);
+app.use(parameterPollution);
+app.use(compression());
 
 /* ================= CORS ================= */
 
@@ -41,10 +36,6 @@ app.use(
   })
 );
 
-/* ================= PERFORMANCE ================= */
-
-app.use(compression());
-
 /* ================= BODY PARSERS ================= */
 
 app.use(express.json({ limit: "10mb" }));
@@ -63,20 +54,12 @@ app.get("/health", (req, res) => {
   });
 });
 
-/* ================= RATE LIMIT (API ONLY) ================= */
-
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 500,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+/* ================= API LIMITER ================= */
 
 app.use("/api", apiLimiter);
 
 /* ================= ROUTES ================= */
 
 app.use("/api", routes);
-
 
 module.exports = app;
