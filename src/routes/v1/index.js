@@ -1,10 +1,11 @@
 const router = require("express").Router();
 const { payloadCheck } = require("../../middlewares");
 const { notFoundHandler, errorHandler } = require("../../middlewares/error.middleware");
+const { authLimiter } = require("../../middlewares/security.middleware");
 
 router.use(payloadCheck);
 
-router.use("/auth", require("./auth.routes"));
+router.use("/auth", authLimiter, require("./auth.routes"));
 router.use("/user", require("./user.routes"));
 router.use("/location", require("./location.routes"));
 router.use("/course", require("./course.routes"));
