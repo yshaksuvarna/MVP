@@ -6,7 +6,6 @@ const ApiError = require("../utils/ApiError");
  * Throws 400 ApiError if validation fails
  */
 const validate = (req, res, next) => {
-    console.log("Validate Middleware Body:", req.body);
     const errors = validationResult(req);
     if (errors.isEmpty()) {
         return next();
@@ -17,8 +16,6 @@ const validate = (req, res, next) => {
 
     // Create a detailed error message
     const errorMessage = errors.array().map(err => `${err.path}: ${err.msg}`).join(", ");
-
-    console.log("❌ Validation Failed:", errorMessage);
 
     throw new ApiError(errorMessage, 400, extractedErrors);
 };

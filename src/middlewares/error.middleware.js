@@ -6,10 +6,6 @@ const notFoundHandler = (req, res, next) => {
 
 const errorHandler = (err, req, res, next) => {
   console.error("❌ Error caught:", err);
-  console.log("Error Type:", err.constructor.name);
-  console.log("Error Keys:", Object.keys(err));
-  console.log("Error StatusCode:", err.statusCode);
-  console.log("Error Message:", err.message);
 
   const statusCode =
     err instanceof ApiError || err.statusCode

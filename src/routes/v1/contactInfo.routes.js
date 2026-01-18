@@ -5,6 +5,7 @@ const { contactInfoValidator } = require("../../validators/contactInfo.validator
 
 router.post("/", contactInfoValidator, validate, contactController.create);
 router.get("/", contactController.get);
-router.put("/", contactInfoValidator, validate, contactController.update);
+router.put("/:id", contactInfoValidator, validate, contactController.update);
+router.delete("/:id", contactController.remove);
 
 module.exports = router;

@@ -2,14 +2,6 @@ const { pool } = require("../config/db");
 const ApiError = require("../utils/ApiError");
 
 exports.createContactInfo = async ({ phone, email, address, googleMapLink }) => {
-    const [[exists]] = await pool.execute(
-        `SELECT id FROM contact_info LIMIT 1`
-    );
-
-    if (exists) {
-        throw new ApiError("Contact info already exists. Use update.", 409);
-    }
-
     const [result] = await pool.execute(
         `
         INSERT INTO contact_info (phone, email, address, googleMapLink)
@@ -22,34 +14,38 @@ exports.createContactInfo = async ({ phone, email, address, googleMapLink }) => 
 };
 
 exports.getContactInfo = async () => {
-    const [[contact]] = await pool.execute(
+    const [rows] = await pool.execute(
         `
-        SELECT phone, email, address, googleMapLink, createdAt
+        SELECT id, phone, email, address, googleMapLink, createdAt
         FROM contact_info
         ORDER BY id DESC
-        LIMIT 1
         `
     );
 
-    if (!contact) {
-        throw new ApiError("Contact info not found", 404);
-    }
-
-    return contact;
+    return rows;
 };
 
-exports.updateContactInfo = async ({ phone, email, address, googleMapLink }) => {
-    // If no record exists, verify logic? The requirement implies update works if it exists.
-    // The previous controller had `ORDER BY id DESC LIMIT 1`.
-
+exports.updateContactInfo = async (id, { phone, email, address, googleMapLink }) => {
     const [result] = await pool.execute(
         `
         UPDATE contact_info
         SET phone = ?, email = ?, address = ?, googleMapLink = ?
-        ORDER BY id DESC
-        LIMIT 1
+        WHERE id = ?
         `,
-        [phone, email, address, googleMapLink || null]
+        [phone, email, address, googleMapLink || null, id]
+    );
+
+    if (!result.affectedRows) {
+        throw new ApiError("Contact info not found", 404);
+    }
+
+    return true;
+};
+
+exports.deleteContactInfo = async (id) => {
+    const [result] = await pool.execute(
+        `DELETE FROM contact_info WHERE id = ?`,
+        [id]
     );
 
     if (!result.affectedRows) {

@@ -11,27 +11,16 @@ const app = express();
 
 /* ================= SECURITY & PERFORMANCE ================= */
 
-app.disable("x-powered-by");
-app.use(securityHeaders);
-app.use(parameterPollution);
+// app.disable("x-powered-by");
+// app.use(securityHeaders);
+// app.use(parameterPollution);
 app.use(compression());
 
 /* ================= CORS ================= */
 
-const allowedOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(",")
-  : [];
-
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // allow server-to-server & tools like curl/postman
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: true, // Reflects the request origin, allowing any domain to access
     credentials: true,
   })
 );
