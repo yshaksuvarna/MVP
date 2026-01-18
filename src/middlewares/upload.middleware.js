@@ -11,11 +11,17 @@ const createUploader = ({
 }) => {
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      const uploadPath = path.join("uploads", folder);
+      const uploadPath = path.join("uploads");
 
-      // ✅ Create folder if it doesn't exist
+      // ✅ Create base uploads folder if it doesn't exist
       if (!fs.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath, { recursive: true });
+      }
+
+      // ✅ Create subfolder if it doesn't exist
+      const subPath = path.join(uploadPath, folder);
+      if (!fs.existsSync(subPath)) {
+        fs.mkdirSync(subPath, { recursive: true });
       }
 
       cb(null, uploadPath);
@@ -23,12 +29,13 @@ const createUploader = ({
 
     filename: (req, file, cb) => {
       const ext = path.extname(file.originalname).toLowerCase();
+      const timestamp = Date.now();
+      const random = Math.round(Math.random() * 1e6);
 
-      const name = `${folder}_${Date.now()}_${Math.round(
-        Math.random() * 1e6
-      )}${ext}`;
+      const filename = `${folder}_${timestamp}_${random}${ext}`;
 
-      cb(null, name);
+      // Prepend folder to filename so it's stored as "folder/filename" in DB
+      cb(null, `${folder}/${filename}`);
     },
   });
 

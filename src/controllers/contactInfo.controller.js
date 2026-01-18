@@ -8,11 +8,22 @@ exports.create = asyncHandler(async (req, res) => {
 });
 
 exports.get = asyncHandler(async (req, res) => {
-    const contact = await contactInfoService.getContactInfo();
-    return successResponse(res, contact);
+    const contacts = await contactInfoService.getContactInfo();
+    return res.status(200).json({
+        success: true,
+        message: contacts.length ? "Contact info list" : "No contact info found",
+        data: contacts
+    });
 });
 
 exports.update = asyncHandler(async (req, res) => {
-    await contactInfoService.updateContactInfo(req.body);
+    const { id } = req.params;
+    await contactInfoService.updateContactInfo(id, req.body);
     return successResponse(res, null, "Contact info updated");
+});
+
+exports.remove = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    await contactInfoService.deleteContactInfo(id);
+    return successResponse(res, null, "Contact info deleted");
 });

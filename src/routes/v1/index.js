@@ -9,10 +9,13 @@ router.use("/auth", authLimiter, require("./auth.routes"));
 router.use("/user", require("./user.routes"));
 router.use("/location", require("./location.routes"));
 router.use("/course", require("./course.routes"));
+router.use("/notes", require("./notes.routes"));
+router.use("/articles", require("./articles.routes"));
 router.use("/banner", require("./banner.routes"));
 router.use("/faqs", require("./faqs.routes"));
 router.use("/contactInfo", require("./contactInfo.routes"));
 router.use("/toppers", require("./toppers.routes"));
+router.use("/quiz", require("./quiz.routes"));
 router.use("/current-affairs", require("./currentAffairs.routes"));
 
 router.use(notFoundHandler);
